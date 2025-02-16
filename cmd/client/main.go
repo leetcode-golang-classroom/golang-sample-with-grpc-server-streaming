@@ -13,6 +13,8 @@ import (
 	"github.com/leetcode-golang-classroom/golang-sample-with-grpc-server-streaming/internal/config"
 	"github.com/leetcode-golang-classroom/golang-sample-with-grpc-server-streaming/internal/service/notification"
 	"github.com/leetcode-golang-classroom/golang-sample-with-grpc-server-streaming/proto"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func main() {
@@ -37,7 +39,8 @@ func main() {
 
 	for {
 		notification, err := stream.Recv()
-		if err == io.EOF { // no more data to read
+		if err == io.EOF || status.Code(err) == codes.Canceled { // no more data to read
+			log.Println("stream closed")
 			break
 		}
 		if err != nil {
